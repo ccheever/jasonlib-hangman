@@ -4,10 +4,14 @@ local http = require "copas.http"
 local cjson = require "cjson"
 
 local font
-local word
+local word = "#loading"
 local link
 local guessedLetters
-local strikes 
+local strikes
+local win
+local lose
+
+local hangmanColor = "white"
 
 local keyboardLetters = {
   {
@@ -35,9 +39,12 @@ function _LOAD()
 end
 
 function init()
-  loadWord()
+  word = "#loading"
   guessedLetters = {}
   strikes = 0
+  win = false
+  lose = false
+  loadWord()
 end
 
 function loadWord()
@@ -58,7 +65,8 @@ function loadWord()
       }
       local val = cjson.decode(table.concat(sink))
       print(val.query .. "  /  " .. val.link)
-      word = val.query
+      word = "nuggets vs trailblazers"
+      -- word = val.query
       link = val.link
     end
   )
@@ -79,6 +87,9 @@ end
 
 function Word(x, y, props, context)
   local str = props.word
+  if str == "#loading" then
+    return
+  end
   if not str then
     return
   end
@@ -145,9 +156,61 @@ function LearnMoreButton(x, y, props, context)
   addZone(x, y, x + 150, y + 30, goToLink, {})
 end
 
-function Gallows(x, y) 
+function Gallows(x, y)
+  LINE(x + 150, y - 15, x + 150, y + 10)
+  LINE(x + 150, y - 15, x + 300, y - 15)
+  LINE(x + 300, y - 15, x + 300, y + 350)
+  LINE(x, y + 350, x + 300, y + 350)
 end
 
+function HangmanDrawing(x, y, props, context)
+  Gallows(x, y, props, context)
+  -- local strikes = props.strikes
+  -- All these are drawn relative to the HangmanDrawing
+  -- print("strikes = " .. strikes)
+  if strikes > 0 then
+    Head(x, y, props, context)
+  end
+  if strikes > 1 then
+    Torso(x, y, props, context)
+  end
+  if strikes > 2 then
+    LeftArm(x, y, props, context)
+  end
+  if strikes > 3 then
+    RightArm(x, y, props, context)
+  end
+  if strikes > 4 then
+    LeftLeg(x, y, props, context)
+  end
+  if strikes > 5 then
+    RightLeg(x, y, props, context)
+  end
+end
+
+function Head(x, y, props, context)
+  CIRC(x + 150, y + 50, 40, hangmanColor)
+end
+
+function Torso(x, y, props, context)
+  LINE(x + 150, y + 90, x + 150, y + 200, hangmanColor)
+end
+
+function LeftArm(x, y, props, context)
+  LINE(x + 150, y + 150, x + 70, y + 100, hangmanColor)
+end
+
+function RightArm(x, y, props, context)
+  LINE(x + 150, y + 150, x + 230, y + 100, hangmanColor)
+end
+
+function LeftLeg(x, y, props, context)
+  LINE(x + 150, y + 200, x + 80, y + 300, hangmanColor)
+end
+
+function RightLeg(x, y, props, context)
+  LINE(x + 150, y + 200, x + 220, y + 300, hangmanColor)
+end
 
 function _DRAW()
   zones = {}
@@ -155,10 +218,29 @@ function _DRAW()
   local h = H()
   RECTFILL(0, 0, w, h, {0.5, 0.5, 0.5})
   Keyboard(0, 280)
-  Word(50, 50, {word = word})
-  GuessedLetters(50, 210)
-  NewGameButton(550, 380)
-  LearnMoreButton(100, 100)
+  Word(5, 50, {word = word})
+  HangmanDrawing(485, 50)
+  GuessedLetters(50, 250)
+  if win then
+    YouWin(50, 100)
+  end
+  if lose then
+    YouLose(50, 100)
+  end
+  if win or lose then
+    LearnMoreButton(300, 100)
+    NewGameButton(300, 150)
+  end
+end
+
+function YouWin(x, y, props, context)
+  TEXT("YOU WIN!", x, y, 4.0, "white", props and props.font or font)
+end
+
+function YouLose(x, y, props, context)
+  TEXT("You Lose :(", x, y, 3.0, "white", props and props.font or font)
+  TEXT("The word was", x, y + 70, 1.5, "yellow", props and props.font or font)
+  TEXT(string.upper(word), x, y + 90, 2.0, "yellow", props and props.font or font)
 end
 
 function isLetterGuessed(c)
@@ -171,16 +253,62 @@ function isLetterGuessed(c)
 end
 
 function guessLetter(c)
+  if win or lose then
+    print("Game already over")
+    return
+  end
   for i, c2 in ipairs(guessedLetters) do
     if c2 == c then
       print("Already guessed " .. c)
       return
     end
   end
+
+  local found = false
+  for i = 1, #word do
+    local c2 = word:sub(i, i)
+    if c == c2 then
+      found = true
+      break
+    end
+  end
+
+  if not found then
+    strikes = strikes + 1
+    if strikes > 5 then
+      lose = true
+    end
+  end
+
   table.insert(guessedLetters, c)
+
+  if checkForWin() then
+    win = true
+  end
 end
 
-
+function checkForWin()
+  if word == "#loading" then
+    return false
+  end
+  for i = 1, #word do
+    local c = word:sub(i, i)
+    local missing = true
+    if c == " " then
+      missing = false
+    else
+      for j, c2 in ipairs(guessedLetters) do
+        if c == c2 then
+          missing = false
+        end
+      end
+    end
+    if missing then
+      return false
+    end
+  end
+  return true
+end
 
 function love.mousepressed(x, y, button, istouch, presses)
   for i, z in ipairs(zones) do
@@ -190,6 +318,24 @@ function love.mousepressed(x, y, button, istouch, presses)
       guessLetter(z.data.c)
     end
   end
+end
+
+function love.keypressed(key, scancode, isrepeat)
+  local lowercaseLetters = "abcdefghijklmnopqrstuvwxyz"
+  local found = false
+  for i = 1, #lowercaseLetters do
+    local c = lowercaseLetters:sub(i, i)
+    -- do something with c
+    if c == key then
+      found = true
+      break
+    end
+  end
+  if not found then
+    print("Ignoring key " .. key)
+    return
+  end
+  guessLetter(key)
 end
 
 function _UPDATE()
