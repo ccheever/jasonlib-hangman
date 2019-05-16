@@ -64,9 +64,9 @@ function loadWord()
         sink = ltn12.sink.table(sink)
       }
       local val = cjson.decode(table.concat(sink))
-      print(val.query .. "  /  " .. val.link)
-      word = "nuggets vs trailblazers"
-      -- word = val.query
+      -- print(val.query .. "  /  " .. val.link)
+      -- word = "nuggets vs trailblazers"
+      word = val.query
       link = val.link
     end
   )
