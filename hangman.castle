@@ -2,5 +2,6 @@
 main: main.lua
 title: Hangman
 owner: ccheever
-primaryColor: FEFE00
-description: A hangman game
+primaryColor: 886666
+coverImage: HangmanScreenshot.png
+description: A newsworthy hangman game
