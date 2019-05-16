@@ -131,6 +131,7 @@ end
 
 function letterPressed(data, click)
   print("Pressed " .. data.c .. " " .. click.x .. ", " .. click.y)
+  guessLetter(data.c)
 end
 
 function KeyboardKey(x, y, props, context)
@@ -279,6 +280,7 @@ function guessLetter(c)
   end
 
   if not found then
+    -- print("Adding strike")
     strikes = strikes + 1
     if strikes > 5 then
       lose = true
@@ -318,9 +320,8 @@ end
 function love.mousepressed(x, y, button, istouch, presses)
   for i, z in ipairs(zones) do
     if (z.x < x and z.y < y and z.x2 > x and z.y2 > y) then
-      -- print("hit in zone (" .. z.x .. ", " .. z.y .. " - " .. z.x2 .. ", " .. z.y2 .. ") for " .. z.data.c)
+      print("hit in zone (" .. z.x .. ", " .. z.y .. " - " .. z.x2 .. ", " .. z.y2 .. ")")
       z.onClick(z.data, {x = x, y = y, button = button, istouch = istouch, presses = presses})
-      guessLetter(z.data.c)
     end
   end
 end
