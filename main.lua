@@ -136,7 +136,12 @@ end
 function KeyboardKey(x, y, props, context)
   local s = string.upper(props.c)
   RECTFILL(x - 8, y - 6, x + 30, y + 30, "black")
-  TEXT(s, x, y, 2.0, "white", props.font or font)
+  if isLetterGuessed(props.c) then
+    color = "gray"
+  else
+    color = "white"
+  end
+  TEXT(s, x, y, 2.0, color, props.font or font)
   addZone(x - 8, y - 6, x + 30, y + 30, letterPressed, props)
 end
 
