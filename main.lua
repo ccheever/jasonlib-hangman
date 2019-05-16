@@ -11,7 +11,8 @@ local strikes
 local win
 local lose
 
-local hangmanColor = "white"
+local hangmanColor = "black"
+local wordColor = "blue"
 
 local keyboardLetters = {
   {
@@ -30,15 +31,38 @@ local keyboardLetters = {
   {"z", "x", "c", "v", "b", "n", "m"}
 }
 
+local themes = {
+  "retro",
+  "gameboy",
+  "sketch",
+  "virtualboy",
+  -- "lofi",
+  "cyber",
+  "none"
+}
+
 local zones
 
 function _LOAD()
-  THEME("sketch")
   font = love.graphics.newFont("./8bitwonder.ttf", 15)
+  SRAND()
   init()
 end
 
+function randomTheme()
+  local t = themes[RAND(1, #themes)]
+  print("theme: " .. t)
+  -- return "virtualboy"
+  return t
+end
+
+function switchToRandomTheme()
+  THEME(randomTheme())
+end
+
 function init()
+  switchToRandomTheme()
+  -- THEME("none")
   word = "#loading"
   guessedLetters = {}
   strikes = 0
@@ -111,11 +135,11 @@ function WordSpace(x, y, props, context)
 end
 
 function WordBlank(x, y, props, context)
-  TEXT("_", x, y, 2.0, "cyan", props.font or font)
+  TEXT("_", x, y, 2.0, wordColor, props.font or font)
 end
 
 function WordLetter(x, y, props, context)
-  TEXT(string.upper(props.c), x, y, 2.0, "cyan", props.font or font)
+  TEXT(string.upper(props.c), x, y, 2.0, wordColor, props.font or font)
   -- TEXT(string.upper(props.c), x, y, 2.0, "red", props.font or font)
 end
 
@@ -147,8 +171,8 @@ function KeyboardKey(x, y, props, context)
 end
 
 function NewGameButton(x, y, props, context)
-  RECTFILL(x, y, x + 150, y + 30, "green")
-  TEXT("New Game", x + 11, y + 2, 2.0, "yellow", props and props.font or font)
+  RECTFILL(x, y, x + 150, y + 30, "black")
+  TEXT("New Game", x + 11, y + 2, 2.0, "green", props and props.font or font)
   addZone(x, y, x + 150, y + 30, init, {})
 end
 
@@ -157,16 +181,16 @@ function goToLink()
 end
 
 function LearnMoreButton(x, y, props, context)
-  RECTFILL(x, y, x + 150, y + 30, "green")
-  TEXT("Learn More", x + 11, y + 2, 2.0, "yellow", props and props.font or font)
+  RECTFILL(x, y, x + 150, y + 30, "black")
+  TEXT("Learn More", x + 11, y + 2, 2.0, "green", props and props.font or font)
   addZone(x, y, x + 150, y + 30, goToLink, {})
 end
 
 function Gallows(x, y)
-  LINE(x + 150, y - 15, x + 150, y + 10)
-  LINE(x + 150, y - 15, x + 300, y - 15)
-  LINE(x + 300, y - 15, x + 300, y + 350)
-  LINE(x, y + 350, x + 300, y + 350)
+  LINE(x + 150, y - 15, x + 150, y + 10, hangmanColor)
+  LINE(x + 150, y - 15, x + 300, y - 15, hangmanColor)
+  LINE(x + 300, y - 15, x + 300, y + 350, hangmanColor)
+  LINE(x, y + 350, x + 300, y + 350, hangmanColor)
 end
 
 function HangmanDrawing(x, y, props, context)
@@ -240,13 +264,13 @@ function _DRAW()
 end
 
 function YouWin(x, y, props, context)
-  TEXT("YOU WIN!", x, y, 4.0, "white", props and props.font or font)
+  TEXT("YOU WIN!", x, y, 4.0, "blue", props and props.font or font)
 end
 
 function YouLose(x, y, props, context)
-  TEXT("You Lose :(", x, y, 3.0, "white", props and props.font or font)
-  TEXT("The word was", x, y + 70, 1.5, "yellow", props and props.font or font)
-  TEXT(string.upper(word), x, y + 90, 2.0, "yellow", props and props.font or font)
+  TEXT("You Lose :(", x, y, 3.0, "red", props and props.font or font)
+  TEXT("The word was", x, y + 70, 1.5, "cyan", props and props.font or font)
+  TEXT(string.upper(word), x, y + 90, 2.0, "cyan", props and props.font or font)
 end
 
 function isLetterGuessed(c)
