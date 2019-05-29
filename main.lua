@@ -45,7 +45,8 @@ local zones
 
 function _LOAD()
   -- font = love.graphics.newFont("./8bitwonder.ttf", 9)
-  font = love.graphics.newFont("./western-bang-bang.otf", 15)
+  -- font = love.graphics.newFont("./western-bang-bang.otf", 15)
+  font = love.graphics.newFont("./texas-tango-bold.otf", 12)
   SRAND()
   init()
 end
@@ -175,9 +176,9 @@ function KeyboardKey(x, y, props, context)
 end
 
 function NewGameButton(x, y, props, context)
-  RECTFILL(x, y, x + 120, y + 30, "black")
-  TEXT("New Game", x + 11, y + 2, 2.0, "green", props and props.font or font)
-  addZone(x, y, x + 120, y + 30, init, {})
+  RECTFILL(x, y, x + 200, y + 30, "black")
+  TEXT("New Game", x + 11, y - 1, 2.0, "green", props and props.font or font)
+  addZone(x, y, x + 200, y + 30, init, {})
 end
 
 function goToLink()
@@ -185,9 +186,9 @@ function goToLink()
 end
 
 function LearnMoreButton(x, y, props, context)
-  RECTFILL(x, y, x + 120, y + 30, "black")
-  TEXT("Learn More", x + 11, y + 2, 2.0, "green", props and props.font or font)
-  addZone(x, y, x + 120, y + 30, goToLink, {})
+  RECTFILL(x, y, x + 200, y + 30, "black")
+  TEXT("Learn More", x + 11, y - 1, 2.0, "green", props and props.font or font)
+  addZone(x, y, x + 200, y + 30, goToLink, {})
 end
 
 function Gallows(x, y)
@@ -272,7 +273,7 @@ function YouWin(x, y, props, context)
 end
 
 function YouLose(x, y, props, context)
-  TEXT("You Lose :(", x, y, 3.0, "red", props and props.font or font)
+  TEXT("You Lose :(", x, y, 2.8, "red", props and props.font or font)
   TEXT("The word was", x, y + 70, 1.5, "cyan", props and props.font or font)
   TEXT(string.upper(word), x, y + 90, 2.0, "cyan", props and props.font or font)
 end
