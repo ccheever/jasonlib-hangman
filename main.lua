@@ -44,7 +44,8 @@ local themes = {
 local zones
 
 function _LOAD()
-  font = love.graphics.newFont("./8bitwonder.ttf", 15)
+  -- font = love.graphics.newFont("./8bitwonder.ttf", 9)
+  font = love.graphics.newFont("./western-bang-bang.otf", 15)
   SRAND()
   init()
 end
@@ -135,7 +136,10 @@ function WordSpace(x, y, props, context)
 end
 
 function WordBlank(x, y, props, context)
-  TEXT("_", x, y, 2.0, wordColor, props.font or font)
+  -- Use default font instead of custom font
+  -- since custom font doesn't have underscore
+  love.graphics.setNewFont(15)
+  TEXT("_", x, y, 2.0, wordColor, nil)
 end
 
 function WordLetter(x, y, props, context)
@@ -143,9 +147,9 @@ function WordLetter(x, y, props, context)
   -- TEXT(string.upper(props.c), x, y, 2.0, "red", props.font or font)
 end
 
-function GuessedLetters(x, y)
+function GuessedLetters(x, y, props, context)
   for i, c in ipairs(guessedLetters) do
-    TEXT(string.upper(c), x + i * 30 - 30, y, 2.0, "red")
+    TEXT(string.upper(c), x + i * 30 - 30, y, 2.0, "red", font)
   end
 end
 
@@ -171,9 +175,9 @@ function KeyboardKey(x, y, props, context)
 end
 
 function NewGameButton(x, y, props, context)
-  RECTFILL(x, y, x + 150, y + 30, "black")
+  RECTFILL(x, y, x + 120, y + 30, "black")
   TEXT("New Game", x + 11, y + 2, 2.0, "green", props and props.font or font)
-  addZone(x, y, x + 150, y + 30, init, {})
+  addZone(x, y, x + 120, y + 30, init, {})
 end
 
 function goToLink()
@@ -181,9 +185,9 @@ function goToLink()
 end
 
 function LearnMoreButton(x, y, props, context)
-  RECTFILL(x, y, x + 150, y + 30, "black")
+  RECTFILL(x, y, x + 120, y + 30, "black")
   TEXT("Learn More", x + 11, y + 2, 2.0, "green", props and props.font or font)
-  addZone(x, y, x + 150, y + 30, goToLink, {})
+  addZone(x, y, x + 120, y + 30, goToLink, {})
 end
 
 function Gallows(x, y)
@@ -264,7 +268,7 @@ function _DRAW()
 end
 
 function YouWin(x, y, props, context)
-  TEXT("YOU WIN!", x, y, 4.0, "blue", props and props.font or font)
+  TEXT("YOU WIN!!", x, y, 4.0, "blue", props and props.font or font)
 end
 
 function YouLose(x, y, props, context)
