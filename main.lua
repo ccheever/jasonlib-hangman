@@ -269,7 +269,7 @@ function _DRAW()
 end
 
 function YouWin(x, y, props, context)
-  TEXT("YOU WIN!!", x, y, 4.0, "blue", props and props.font or font)
+  TEXT("YOU WIN!!", x, y, 3.25, "blue", props and props.font or font)
 end
 
 function YouLose(x, y, props, context)
